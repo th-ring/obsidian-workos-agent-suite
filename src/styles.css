@@ -1,0 +1,113 @@
+﻿/* ==========================================================================
+   WorkOS Agent Suite - Plugin Styles
+   ========================================================================== */
+
+.workos-agent-progress-modal {
+  padding: 8px 4px;
+}
+
+.agent-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding-bottom: 12px;
+}
+
+.agent-progress-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.agent-progress-icon {
+  display: flex;
+  align-items: center;
+  color: var(--interactive-accent);
+}
+
+.agent-progress-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.agent-progress-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  margin-bottom: 14px;
+}
+
+.agent-progress-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--background-modifier-border);
+  border-top-color: var(--interactive-accent);
+  border-radius: 50%;
+  animation: agentProgressSpin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes agentProgressSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.agent-progress-check-icon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-success);
+}
+
+.agent-progress-err-icon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-error);
+}
+
+.agent-progress-status-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.agent-progress-log-box {
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 12px 14px;
+  max-height: 220px;
+  min-height: 100px;
+  overflow-y: auto;
+  font-family: var(--font-monospace);
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.agent-progress-log-line {
+  color: var(--text-muted);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.agent-progress-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 12px;
+}
+
+.agent-progress-btn {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

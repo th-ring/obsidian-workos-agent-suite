@@ -1,0 +1,10 @@
+﻿{
+  "id": "workos-agent-suite",
+  "name": "WorkOS Agent Suite",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Unified AI Agent & Skills Suite: 1-Click Triage, Task Decomposition, Codex/Claude/Antigravity/Ollama Engine & MCP Bridge.",
+  "author": "Obsidian WorkOS",
+  "authorUrl": "https://obsidian.md",
+  "isDesktopOnly": true
+}
