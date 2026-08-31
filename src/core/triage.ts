@@ -56,15 +56,14 @@ export function executeTriageAction(
   const archiveDir = path.join(vaultPath, "40_Archive");
   if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
 
+  const cleanStream = decision.workstream ? decision.workstream.replace(/[\[\]]/g, "").trim() : null;
+  const formattedStream = cleanStream ? `[[${cleanStream}]]` : null;
+
   if (decision.type === "task") {
-    // 1. Create Task in 10_Tasks or Workstream/Tasks
+    // 1. Create Task in 20_Workstreams/<Name>/Tasks or 10_Tasks
     let targetDir = path.join(vaultPath, "10_Tasks");
-    if (decision.workstream) {
-      const cleanStream = decision.workstream.replace(/[\[\]]/g, "").trim();
-      const streamTaskDir = path.join(vaultPath, "20_Workstreams", cleanStream, "Tasks");
-      if (fs.existsSync(streamTaskDir)) {
-        targetDir = streamTaskDir;
-      }
+    if (cleanStream) {
+      targetDir = path.join(vaultPath, "20_Workstreams", cleanStream, "Tasks");
     }
     if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 
@@ -75,7 +74,7 @@ export function executeTriageAction(
       title: decision.title || sanitizedTitle,
       status: "todo",
       priority: decision.priority || "medium",
-      workstream: decision.workstream ? (decision.workstream.startsWith("[[") ? decision.workstream : `[[${decision.workstream}]]`) : null,
+      workstream: formattedStream,
       due: decision.due || null,
       created: today,
       tags: decision.tags || data.tags || [],
@@ -104,19 +103,15 @@ export function executeTriageAction(
       action: "task_created",
       targetPath,
       title: sanitizedTitle,
-      workstream: decision.workstream,
+      workstream: formattedStream || undefined,
       priority: decision.priority,
-      summary: `In Aufgabe "${sanitizedTitle}" umgewandelt und archiviert.`,
+      summary: `In Aufgabe "${sanitizedTitle}" unter ${path.relative(vaultPath, targetDir)} umgewandelt und archiviert.`,
     };
   } else if (decision.type === "note") {
-    // 2. Create Knowledge Note in 30_Notes or Workstream/Notes
+    // 2. Create Knowledge Note in 20_Workstreams/<Name>/Notes or 30_Notes
     let targetDir = path.join(vaultPath, "30_Notes");
-    if (decision.workstream) {
-      const cleanStream = decision.workstream.replace(/[\[\]]/g, "").trim();
-      const streamNoteDir = path.join(vaultPath, "20_Workstreams", cleanStream, "Notes");
-      if (fs.existsSync(streamNoteDir)) {
-        targetDir = streamNoteDir;
-      }
+    if (cleanStream) {
+      targetDir = path.join(vaultPath, "20_Workstreams", cleanStream, "Notes");
     }
     if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 
@@ -126,7 +121,7 @@ export function executeTriageAction(
       type: "note",
       title: decision.title || sanitizedTitle,
       category: decision.category || "concept",
-      workstream: decision.workstream ? (decision.workstream.startsWith("[[") ? decision.workstream : `[[${decision.workstream}]]`) : null,
+      workstream: formattedStream,
       created: today,
       updated: today,
       tags: decision.tags || data.tags || [],
@@ -147,8 +142,8 @@ export function executeTriageAction(
       action: "note_created",
       targetPath,
       title: sanitizedTitle,
-      workstream: decision.workstream,
-      summary: `In Wissensnotiz "${sanitizedTitle}" umgewandelt und archiviert.`,
+      workstream: formattedStream || undefined,
+      summary: `In Wissensnotiz "${sanitizedTitle}" unter ${path.relative(vaultPath, targetDir)} umgewandelt und archiviert.`,
     };
   } else if (decision.type === "workstream") {
     // 3. Create Workstream
