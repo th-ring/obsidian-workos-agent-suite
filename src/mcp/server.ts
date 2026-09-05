@@ -1,4 +1,4 @@
-﻿import readline from "readline";
+import readline from "readline";
 import path from "path";
 import fs from "fs";
 import { createDefaultToolRegistry } from "../core/tools/defaultRegistry";
@@ -23,7 +23,7 @@ const rl = readline.createInterface({
   terminal: false,
 });
 
-rl.on("line", async (line) => {
+rl.on("line", async (line: string) => {
   if (!line.trim()) return;
   try {
     const req = JSON.parse(line);
@@ -75,5 +75,12 @@ rl.on("line", async (line) => {
     }
   } catch (err: any) {
     process.stderr.write(`MCP Parsing Error: ${err.message}\n`);
+    process.stdout.write(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32700, message: `Parse error: ${err.message}` },
+      }) + "\n"
+    );
   }
 });

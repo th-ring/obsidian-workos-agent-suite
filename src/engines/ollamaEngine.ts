@@ -1,4 +1,4 @@
-﻿import { BaseEngine, EngineResponse, WorkOSEngine } from "./baseEngine";
+import { EngineResponse, WorkOSEngine } from "./baseEngine";
 
 export class OllamaEngine implements WorkOSEngine {
   name = "ollama";

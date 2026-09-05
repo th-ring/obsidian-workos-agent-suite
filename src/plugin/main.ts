@@ -1,4 +1,4 @@
-﻿import { MarkdownView, Notice, Plugin, TFile } from "obsidian";
+import { MarkdownView, Notice, Plugin, TFile } from "obsidian";
 import { AgentProgressModal } from "./progressModal";
 import { AgentSuiteSettingTab } from "./settings";
 import { EngineRunner } from "../engines/runner";
@@ -12,7 +12,7 @@ import { AgentSuiteSettings, DEFAULT_SETTINGS } from "../types";
 
 export default class WorkOSAgentSuitePlugin extends Plugin {
   settings: AgentSuiteSettings = DEFAULT_SETTINGS;
-  engineRunner: EngineRunner;
+  engineRunner!: EngineRunner;
 
   async onload() {
     console.log("Loading WorkOS Agent Suite plugin...");
@@ -93,13 +93,16 @@ export default class WorkOSAgentSuitePlugin extends Plugin {
         const item = unprocessed[i];
         modal.addLog(`[${i + 1}/${unprocessed.length}] Analysiere: ${item.file}`);
 
-        // Lock file during processing
-        if (this.settings.lockNotesDuringProcessing) {
-          setFileLock(item.path, `agent:${this.settings.engine}`);
-        }
+        let isLocked = false;
+        try {
+          // Lock file during processing
+          if (this.settings.lockNotesDuringProcessing) {
+            setFileLock(item.path, `agent:${this.settings.engine}`);
+            isLocked = true;
+          }
 
-        // Build prompt for LLM
-        const prompt = `Analysiere folgende unstrukturierte Notiz aus der Inbox und entscheide, ob es ein 'task' (Aufgabe), 'note' (Wissen/Konzept) oder 'workstream' ist.
+          // Build prompt for LLM
+          const prompt = `Analysiere folgende unstrukturierte Notiz aus der Inbox und entscheide, ob es ein 'task' (Aufgabe), 'note' (Wissen/Konzept) oder 'workstream' ist.
 Antworte AUSSCHLIESSLICH als valides JSON-Objekt in folgendem Schema:
 {
   "type": "task" | "note" | "workstream",
@@ -115,21 +118,27 @@ Notiz-Titel: ${item.data.title || item.file}
 Notiz-Inhalt:
 ${item.content}`;
 
-        const llmRes = await this.engineRunner.runPrompt(prompt, "Du bist ein präziser Task & Knowledge Triage Agent für Obsidian WorkOS.");
+          const llmRes = await this.engineRunner.runPrompt(prompt, "Du bist ein präziser Task & Knowledge Triage Agent für Obsidian WorkOS.");
 
-        let decision: any = { type: "task", title: item.data.title || item.file.replace(".md", "") };
-        try {
-          const cleanJson = llmRes.content.replace(/```json\n?|\n?```/g, "").trim();
-          decision = JSON.parse(cleanJson);
-        } catch {
-          modal.addLog(`⚠️ Standard-Fallback für ${item.file} genutzt.`);
+          let decision: any = { type: "task", title: item.data.title || item.file.replace(".md", "") };
+          try {
+            const cleanJson = llmRes.content.replace(/```json\n?|\n?```/g, "").trim();
+            decision = JSON.parse(cleanJson);
+          } catch {
+            modal.addLog(`⚠️ Standard-Fallback für ${item.file} genutzt.`);
+          }
+
+          decision.reviewStatus = this.settings.defaultReviewStatus;
+
+          // Execute triage action
+          const triageResult = executeTriageAction(vaultPath, item.path, decision);
+          modal.addLog(`✅ ${triageResult.summary}`);
+        } catch (itemErr: any) {
+          modal.addLog(`❌ Fehler bei ${item.file}: ${itemErr.message}`);
+          if (isLocked) {
+            releaseFileLock(item.path);
+          }
         }
-
-        decision.reviewStatus = this.settings.defaultReviewStatus;
-
-        // Execute triage action
-        const triageResult = executeTriageAction(vaultPath, item.path, decision);
-        modal.addLog(`✅ ${triageResult.summary}`);
       }
 
       // Auto Git Commit if enabled

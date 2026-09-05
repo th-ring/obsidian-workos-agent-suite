@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { VaultStatsResult } from "../types";
@@ -31,7 +31,7 @@ export function getVaultStats(vaultPath: string): VaultStatsResult {
   // 1. Scan 00_Inbox
   const inboxDir = path.join(vaultPath, "00_Inbox");
   if (fs.existsSync(inboxDir)) {
-    const files = fs.readdirSync(inboxDir).filter((f) => f.endsWith(".md"));
+    const files = fs.readdirSync(inboxDir).filter((f: string) => f.endsWith(".md"));
     stats.inboxCount = files.length;
     for (const file of files) {
       try {
@@ -50,7 +50,7 @@ export function getVaultStats(vaultPath: string): VaultStatsResult {
   // 2. Scan 10_Tasks
   const tasksDir = path.join(vaultPath, "10_Tasks");
   if (fs.existsSync(tasksDir)) {
-    const files = fs.readdirSync(tasksDir).filter((f) => f.endsWith(".md"));
+    const files = fs.readdirSync(tasksDir).filter((f: string) => f.endsWith(".md"));
     stats.totalTasks += files.length;
     for (const file of files) {
       try {
@@ -77,8 +77,8 @@ export function getVaultStats(vaultPath: string): VaultStatsResult {
   if (fs.existsSync(workstreamsDir)) {
     const streamFolders = fs
       .readdirSync(workstreamsDir, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
-      .map((d) => d.name);
+      .filter((d: fs.Dirent) => d.isDirectory())
+      .map((d: fs.Dirent) => d.name);
 
     for (const stream of streamFolders) {
       const streamPath = path.join(workstreamsDir, stream);
@@ -101,7 +101,7 @@ export function getVaultStats(vaultPath: string): VaultStatsResult {
       // Also check subtasks in 20_Workstreams/<Name>/Tasks/
       const streamTasksDir = path.join(streamPath, "Tasks");
       if (fs.existsSync(streamTasksDir)) {
-        const subTasks = fs.readdirSync(streamTasksDir).filter((f) => f.endsWith(".md"));
+        const subTasks = fs.readdirSync(streamTasksDir).filter((f: string) => f.endsWith(".md"));
         stats.totalTasks += subTasks.length;
         for (const st of subTasks) {
           try {
@@ -121,7 +121,7 @@ export function getVaultStats(vaultPath: string): VaultStatsResult {
   // 4. Scan 30_Notes
   const notesDir = path.join(vaultPath, "30_Notes");
   if (fs.existsSync(notesDir)) {
-    const files = fs.readdirSync(notesDir).filter((f) => f.endsWith(".md"));
+    const files = fs.readdirSync(notesDir).filter((f: string) => f.endsWith(".md"));
     stats.totalNotes = files.length;
     for (const file of files) {
       try {

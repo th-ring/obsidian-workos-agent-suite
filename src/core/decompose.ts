@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import matter from "gray-matter";
 import { DecomposeResult } from "../types";
 
@@ -42,7 +42,7 @@ export function decomposeTask(
     if (content.includes("## Subtasks")) {
       content = content.replace(
         /## Subtasks([\s\S]*?)(##|$)/,
-        (match, existingSubtasks, nextSection) => {
+        (match: string, existingSubtasks: string, nextSection: string) => {
           const combined = `${existingSubtasks.trim()}\n${formattedCheckboxes}`.trim();
           return `## Subtasks\n${combined}\n\n${nextSection}`;
         }

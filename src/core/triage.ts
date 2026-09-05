@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { TriageItemResult, TriageResult } from "../types";
@@ -8,7 +8,7 @@ export function listUnprocessedInbox(vaultPath: string): { file: string; path: s
   const inboxDir = path.join(vaultPath, "00_Inbox");
   if (!fs.existsSync(inboxDir)) return [];
 
-  const files = fs.readdirSync(inboxDir).filter((f) => f.endsWith(".md"));
+  const files = fs.readdirSync(inboxDir).filter((f: string) => f.endsWith(".md"));
   const items: { file: string; path: string; data: any; content: string }[] = [];
 
   for (const file of files) {
@@ -95,6 +95,9 @@ export function executeTriageAction(
     const archivedSource = path.join(archiveDir, path.basename(sourceFilePath));
     data.status = "triaged";
     data.triaged_to = `[[${sanitizedTitle}]]`;
+    data.agent_state = "idle";
+    delete data.locked_by;
+    delete data.locked_at;
     fs.writeFileSync(archivedSource, matter.stringify(content, data), "utf8");
     fs.unlinkSync(sourceFilePath);
 
@@ -134,6 +137,9 @@ export function executeTriageAction(
     const archivedSource = path.join(archiveDir, path.basename(sourceFilePath));
     data.status = "triaged";
     data.triaged_to = `[[${sanitizedTitle}]]`;
+    data.agent_state = "idle";
+    delete data.locked_by;
+    delete data.locked_at;
     fs.writeFileSync(archivedSource, matter.stringify(content, data), "utf8");
     fs.unlinkSync(sourceFilePath);
 
@@ -157,6 +163,9 @@ export function executeTriageAction(
     const archivedSource = path.join(archiveDir, path.basename(sourceFilePath));
     data.status = "triaged";
     data.triaged_to = `[[${sanitizedTitle}]]`;
+    data.agent_state = "idle";
+    delete data.locked_by;
+    delete data.locked_at;
     fs.writeFileSync(archivedSource, matter.stringify(content, data), "utf8");
     fs.unlinkSync(sourceFilePath);
 
@@ -171,6 +180,9 @@ export function executeTriageAction(
     // 4. Pure archive
     const archivedSource = path.join(archiveDir, path.basename(sourceFilePath));
     data.status = "archived";
+    data.agent_state = "idle";
+    delete data.locked_by;
+    delete data.locked_at;
     fs.writeFileSync(archivedSource, matter.stringify(content, data), "utf8");
     fs.unlinkSync(sourceFilePath);
 

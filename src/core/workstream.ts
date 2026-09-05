@@ -1,4 +1,4 @@
-﻿import fs from "fs";
+import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { WorkstreamResult } from "../types";
@@ -23,7 +23,7 @@ export function createWorkstream(
   const agentsPath = path.join(folderPath, "AGENTS.md");
 
   // Create folder structure
-  [folderPath, tasksPath, notesPath].forEach((dir) => {
+  [folderPath, tasksPath, notesPath].forEach((dir: string) => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
