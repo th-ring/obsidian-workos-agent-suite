@@ -98,6 +98,9 @@ if (prod) {
     fs.copyFileSync(path.join(vaultPluginDir, "main.js"), path.join(localDistDir, "main.js"));
     fs.copyFileSync(path.join(vaultPluginDir, "main.js"), path.join(localDistDir, "plugin-main.js"));
   }
+  if (fs.existsSync(path.join(localDistDir, "mcp-server.js"))) {
+    fs.copyFileSync(path.join(localDistDir, "mcp-server.js"), path.join(vaultPluginDir, "mcp-server.js"));
+  }
 
   console.log("Production build finished successfully for all targets!");
 } else {
