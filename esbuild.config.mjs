@@ -1,4 +1,4 @@
-﻿import esbuild from "esbuild";
+import esbuild from "esbuild";
 import process from "process";
 import fs from "fs";
 import path from "path";
@@ -95,6 +95,7 @@ if (prod) {
 
   // Also copy main.js to local dist
   if (fs.existsSync(path.join(vaultPluginDir, "main.js"))) {
+    fs.copyFileSync(path.join(vaultPluginDir, "main.js"), path.join(localDistDir, "main.js"));
     fs.copyFileSync(path.join(vaultPluginDir, "main.js"), path.join(localDistDir, "plugin-main.js"));
   }
 
